@@ -1,7 +1,5 @@
 <h2><%=@mitemplate.name%></h2>
-<%= form_for @mitemplate, :as => :mitemplate,
-            :url => {:action => 'edit', :project_id => @project_id},
-            :html => {:method => :post, :multipart => false, :id => 'template_form'} do |f| %>
+<%= form_for @mitemplate, url: templatesg_path(@mitemplate), method: :patch, html: { multipart: false, id: 'template_form' } do |f| %>
 <div class="box tabular">
 <%= f.text_field :name, :size => 30, :required => true %>
 <%= text_area_tag 'mitemplate[text]', @mitemplate.text, :cols => 100, :rows => 25,

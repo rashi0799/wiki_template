@@ -1,14 +1,8 @@
-# Default routes are no longer supported by Redmine
-# Added default routel
-get 'templatesg', :to => 'templatesg#index'
-get 'templatesg/new', :to => 'templatesg#new'
-get 'templates/new', :to => 'templates#new'
-get 'templatesg/:id/edit', :to => 'templatesg#edit'
-get 'templates/:id/edit', :to => 'templates#edit'
-post 'templatesg/:id/:action', :to => 'templatesg'
-post 'templatesg/new', :to => 'templatesg#new'
-post 'templates/:id/:action', :to => 'templates'
-post 'templates/new', :to => 'templates#new'
-
-
+# config/routes.rb
+RedmineApp::Application.routes.draw do
+  resources :templatesg, controller: 'templatesg', except: [:show]
+  put 'templatesg/:id', to: 'templatesg#edit', as: 'update_templatesg'
+  delete 'templatesg/:id', to: 'templatesg#destroy', as: 'delete_templatesg'
+  resources :templates, controller: 'templates', except: [:show]
+end
 
