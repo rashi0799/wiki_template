@@ -5,18 +5,19 @@ class TemplatesController < ApplicationController
   before_action :find_project, :authorize, only: [:new, :edit, :destroy]
 
   def index
-    # Add logic for displaying templates or redirect as needed
-  end
+    @project_templates = WikiTemplates.where(project_id: @project.id)
+   end
 
-  def create
+  def new
+    @project_id = params[:project_id]
     if request.post?
       @mitemplate = WikiTemplates.new(template_params)
       @mitemplate.author_id = User.current.id
-      @mitemplate.project_id = @project_id
+      @mitemplate.project_id = @project.id
 
       if @mitemplate.save
         flash[:notice] = l(:notice_successful_create)
-        redirect_to project_settings_path(@project, tab: 'template')
+        redirect_to project_templates_path(@project)
       else
         render action: 'new'
       end
@@ -25,16 +26,43 @@ class TemplatesController < ApplicationController
     end
   end
 
-  def destroy
-    @mitemplate = WikiTemplates.find(params[:id])
+def create
+  if request.post?
+    @mitemplate = WikiTemplates.new(template_params)
+    @mitemplate.author_id = User.current.id
+    @mitemplate.project_id = @project_id
 
-    if @mitemplate
-      @mitemplate.destroy
-      flash[:notice] = l(:label_template_delete)
+    if @mitemplate.save
+      flash[:notice] = l(:notice_successful_create)
+
+      # Check if a template is selected and handle it
+      if params[:use_template] == '1' && params[:template_id].present?
+        # Find the selected template
+        selected_template = WikiTemplates.find(params[:template_id])
+
+        # Create a new wiki page using the selected template
+        @wiki_page = WikiPage.new(
+          project_id: @mitemplate.project_id, # Set the correct project_id
+          title: @mitemplate.name,
+          text: selected_template.text
+        )
+
+        if @wiki_page.save
+          flash[:notice] = l(:notice_successful_create)
+          redirect_to controller: 'wiki', action: 'show', id: @wiki_page.title, project_id: @wiki_page.project_id
+        else
+          render action: 'new'
+        end
+      else
+        redirect_to action: 'index'
+      end
+    else
+      render action: 'new'
     end
-
-    redirect_to project_settings_path(@project, tab: 'template')
+  else
+    @mitemplate = WikiTemplates.new
   end
+end
 
 def edit
   if request.patch?
@@ -63,8 +91,7 @@ end
 
   def find_project
     @project = Project.find(params[:project_id])
-    @project_id = params[:project_id] # Consider whether this is necessary
-  rescue ActiveRecord::RecordNotFound
+    rescue ActiveRecord::RecordNotFound
     render_404
   end
 end

@@ -1,1 +1,8 @@
-#admin-menu a.templatesg { background-image: url(../images/globaltemplate3.png); }
+/* app/assets/stylesheets/gsc_plantillas.css */
+/*
+ *= require_tree .
+ *= require_self
+ */
+
+#admin-menu a.templatesg { background-image: url('globaltemplate3.png'); }
+

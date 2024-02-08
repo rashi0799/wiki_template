@@ -1,7 +1,7 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require 'test_helper'
 
 class WikiTemplatesgTest < ActiveSupport::TestCase
-  fixtures :wiki_templatesgs
+  fixtures :wiki_templates
 
   # Replace this with your real tests.
   def test_truth

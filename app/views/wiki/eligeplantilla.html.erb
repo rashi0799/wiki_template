@@ -1,11 +1,8 @@
-<%= wiki_page_breadcrumb(@page) %>
-
 <h2><%=h @page.pretty_title %></h2>
-
-<%= form_for @template, as: :template, url: { action: 'edit', project_id: @project_id, id: @page.title }, html: { method: :get, multipart: false, id: 'wiki_form' } do |f| %>
+<%= form_for :template, @template, url: { action: 'edit', project_id: @project_id, id: @page.title }, html: { method: :get, multipart: false, id: 'wiki_form' } do |f| %>
   <%= error_messages_for 'content' %>
 
-  <div class="box tabular">
+  <fieldset class="box tabular settings">
     <p>
       <label for="issue_plantilla"><%= l(:label_choose_template) %></label>
       <select id="issue_plantilla" name="issue_plantilla">
@@ -26,15 +23,19 @@
         <% end %>
       </select>
     </p>
-  </div>
-
-  <br>
+  </fieldset>
 
   <div id="preview" class="wiki"></div>
 
   <p>
     <%= submit_tag l(:label_template_select) %>
-    <%= link_to l(:label_preview), preview_wiki_path(@project, @page.title), method: :post, remote: true, update: 'preview', with: "Form.serialize('wiki_form')", complete: "Element.scrollTo('preview')" %>
+    <%= link_to_remote l(:label_preview),
+                       { url: { controller: 'wiki', action: 'preview', project_id: @project, id: @page.title },
+                         method: :post,
+                         update: 'preview',
+                         with: "Form.serialize('wiki_form')",
+                         complete: "Element.scrollTo('preview')" },
+                       accesskey: accesskey(:preview) %>
   </p>
 
   <%= wikitoolbar_for 'content_text' %>

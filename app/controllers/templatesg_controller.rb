@@ -78,38 +78,37 @@ def update
     render action: 'edit'
   end
 end
-  def create
-    @mitemplate = WikiTemplatesg.new(template_params)
+def create
+  @mitemplate = WikiTemplatesg.new(template_params)
 
-    if @mitemplate.save
-      flash[:notice] = l(:notice_successful_create)
+  if @mitemplate.save
+    flash[:notice] = l(:notice_successful_create)
 
-      # Check if a template is selected and handle it
-      if params[:use_template] == '1' && params[:template_id].present?
-        # Find the selected template
-        selected_template = WikiTemplatesg.find(params[:template_id])
+    # Check if a template is selected and handle it
+    if params[:use_template] == '1' && params[:template_id].present?
+      # Find the selected template
+      selected_template = WikiTemplatesg.find(params[:template_id])
 
-        # Create a new wiki page using the selected template
-        @wiki_page = WikiPage.new(
-          project_id: @mitemplate.project_id,  # Make sure to set the correct project_id
-          title: @mitemplate.name,
-          text: selected_template.text
-        )
+      # Create a new wiki page using the selected template
+      @wiki_page = WikiPage.new(
+        project_id: @mitemplate.project_id, # Set the correct project_id
+        title: @mitemplate.name,
+        text: selected_template.text
+      )
 
-        if @wiki_page.save
-          flash[:notice] = l(:notice_successful_create)
-          redirect_to controller: 'wiki', action: 'show', id: @wiki_page.title, project_id: @wiki_page.project_id
-        else
-          render action: 'new'
-        end
+      if @wiki_page.save
+        flash[:notice] = l(:notice_successful_create)
+        redirect_to controller: 'wiki', action: 'show', id: @wiki_page.title, project_id: @wiki_page.project_id
       else
-        redirect_to action: 'index'
+        render action: 'new'
       end
     else
-      render action: 'new'
+      redirect_to action: 'index'
     end
+  else
+    render action: 'new'
   end
-
+end
   private
 
   def template_params
